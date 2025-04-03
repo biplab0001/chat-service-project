@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="chat-container">
+        <div id="message-heading">
+            <span id="message-welcome"></span>
+            <span id="typing-indicator"></span>
+        </div>
+        <div id="message-list">
+            <!-- list will contain messages -->
+        </div>
+        <input type="text" id="message-input">
+        <button id="send-message">Send</button>
+
+        <div id="connect-user">
+            <div id="usercount"></div>
+            <div id="users"></div>
+        </div>
+    </div>
+
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io.connect('http://localhost:3000');
+
+        const username = prompt('Enter your name');
+        // emit the username to the server
+        socket.emit("join", username);
+        
+
+        // get the elements
+        const messageInput = document.getElementById("message-input");
+        const messageList = document.getElementById("message-list");
+        const sendButton = document.getElementById("send-message");
+        const welcomeMessage = document.getElementById("message-welcome");
+        const typingIndicator = document.getElementById("typing-indicator");
+        const userCountDiv = document.getElementById('usercount');
+        const userListDiv = document.getElementById('users');
+
+        //Welcome message functionality
+        welcomeMessage.innerText = 'Welcome ' + username;
+        setTimeout(() => {
+            welcomeMessage.innerText = '';
+        }, 5000);
+
+        //typing message functionallity
+        let typingTimeout;
+        let isTyping = false;
+
+        messageInput.addEventListener('input', () => {
+            if (!isTyping) {
+                isTyping = true;
+                socket.emit('typing');
+            }
+            
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                isTyping = false;
+                socket.emit('stop_typing');
+            }, 1000);
+        });
+
+        //connected user count
+        socket.on('user_count', (count) => {
+            userCountDiv.textContent = `Connected Users: ${count}`;
+        });
+
+        socket.on('user_list', (users) => {
+            userListDiv.innerHTML = '';
+            users.forEach(user => {
+                console.log(user)
+                const userElement = document.createElement("div");
+                userElement.innerText = user;
+                userListDiv.appendChild(userElement);
+            });
+        });
+
+        socket.on('typing_status', (users) => {
+            if (users.length === 0) {
+                typingIndicator.textContent = '';
+            } else {
+                typingIndicator.textContent = `${users.join(', ')} typing...`;
+            }
+        });
+
+
+        sendButton.addEventListener('click', function () {
+            // read the message from input and send to server.
+            const message = messageInput.value;
+            if (message) {
+                socket.emit('new_message', message); // Emitting the message to the server
+
+                // add message to the list 
+                const messageElement = document.createElement("div");
+                messageElement.innerText = message + ": " + username;
+                messageList.appendChild(messageElement);
+
+                //  Reset the value of textbox to empty
+                messageInput.value = '';
+            }
+        });
+
+        socket.on('load_message', (messages)=>{
+            messages.forEach(message => {
+                const messageElement = document.createElement("div");
+                if(message.name == username){
+                    messageElement.innerText = message.message + ": " + message.name;
+                    messageList.appendChild(messageElement);
+                } else {
+                    messageElement.innerText = message.name + ": " + message.message;
+                    messageList.appendChild(messageElement);
+                }
+            });
+        })
+
+        // Listen for broadcast message, and add it to the list.
+        socket.on('broadcast_message', (userMessage) => {
+            const messageElement = document.createElement("div");
+            messageElement.innerText = userMessage.username + " :" + userMessage.message;
+            messageList.appendChild(messageElement);
+        })
+    </script>
+</body>
+</html>
