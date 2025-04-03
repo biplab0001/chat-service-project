@@ -1,0 +1,112 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+#chat-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#message-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#message-list {
+    height: 400px; /* Fixed height for scrolling */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #fafafa;
+}
+
+#message-input {
+    width: calc(100% - 90px); /* Adjusting for button width */
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+#send-message {
+    padding: 10px 15px;
+    border-radius: 4px;
+    border: none;
+    background-color: #28a745; /* Green button */
+    color: white;
+    cursor: pointer;
+}
+
+#send-message:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+#connect-user {
+    margin-top: 20px; /* Space above user count */
+}
+
+#usercount, #users {
+    margin-bottom: 10px; /* Space between user elements */
+}
+
+/* Mobile View */
+@media (max-width: 600px) {
+    #message-input {
+        width: calc(100% - 60px); /* Adjusting for button width */
+        margin-bottom: 10px; /* Space below input field */
+        font-size: 14px; /* Smaller font size */
+    }
+
+    #send-message {
+        width: 100%;
+        margin-top: -5px; /* Overlap adjustment */
+        font-size: 14px; /* Smaller font size */
+        padding: 10px; /* Adjust padding */
+    }
+
+    #chat-container {
+        padding-left: 10px; 
+        padding-right: 10px; 
+        margin-left: auto; 
+        margin-right: auto; 
+        max-width: none; /* Full width on mobile */
+        box-shadow: none; /* Remove shadow on mobile for simplicity */
+    }
+    
+    #message-list {
+        height: auto; /* Allow full height on mobile */
+        max-height: calc(80vh - 150px); /* Responsive max height based on viewport */
+        overflow-y:auto; /* Scrollable if content exceeds max height */
+        
+        }
+    
+        #message-heading {
+            flex-direction : column; 
+            align-items : flex-start ; 
+        }
+        
+        #typing-indicator{
+            font-size : smaller ; 
+            color : gray ; 
+        }
+        
+        #usercount{
+            font-size : smaller ; 
+            color : gray ; 
+        }
+        
+        #users div{
+            font-size : smaller ; 
+            color : gray ; 
+        }
+}
